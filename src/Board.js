@@ -138,7 +138,13 @@
       var numRows = rows.length;
       var loops = numRows - start;
       var numQueens = 0;
-      for (var i = 0; i < loops; i++) {
+      var startRow = 0;
+      if(start < 0){
+        startRow = (start * -1);
+        loops = numRows;
+        start = 0;
+      }
+      for (var i = startRow; i < loops; i++) {
         numQueens += rows[i][start];
         start++;
       }
@@ -149,7 +155,7 @@
     hasAnyMajorDiagonalConflicts: function() {
       var rows = this.rows();
       var numCols = rows.length;
-      for (var i = 0; i < numCols; i++) {
+      for (var i = (numCols*-1 + 1); i < numCols; i++) {
         if(this.hasMajorDiagonalConflictAt(i)){
           return true;
         }
@@ -164,14 +170,24 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      var start = minorDiagonalColumnIndexAtFirstRow;
       var rows = this.rows();
-      var numRows = rows.length;
-      var loops = start + 1;
+      var numRows = rows.length - 1;
+      var startCol = minorDiagonalColumnIndexAtFirstRow;
+      var loops = startCol + 1;
       var numQueens = 0;
-      for (var i = 0; i < loops; i++) {
-        numQueens += rows[i][start];
-        start--;
+      var startRow = 0;
+      if(startCol >= numRows){
+        startRow = startCol - numRows;
+        startCol = numRows;
+        for (var row = startRow; row < numRows+1; row++) {
+          numQueens += rows[row][startCol];
+          startCol--;
+        }
+      }else{
+        for (var row = startRow; row < loops; row++) {
+          numQueens += rows[row][startCol];
+          startCol--;
+        }
       }
       return numQueens > 1; // fixme
     },
@@ -180,7 +196,7 @@
     hasAnyMinorDiagonalConflicts: function() {
       var rows = this.rows();
       var numCols = rows.length;
-      for (var i = numCols-1; i >= 0; i--) {
+      for (var i = (numCols*2)-1; i >= 0; i--) {
         if(this.hasMinorDiagonalConflictAt(i)){
           return true;
         }
